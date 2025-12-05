@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
 db = SQLAlchemy()
 
+
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(
@@ -24,15 +25,18 @@ class User(db.Model):
 class People(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     age: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120), unique=False, nullable=False)
     height: Mapped[str] = mapped_column(nullable=False)
     weight: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     favorit_people: Mapped[List["FavoritPeople"]] = relationship()
+    name: Mapped[str] = mapped_column(nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
+            "age": self.age,
+            "height": self.height,
+            "name": self.name
             # do not serialize the password, its a security breach
         }
 
@@ -48,18 +52,21 @@ class FavoritPeople(db.Model):
 class Planeta(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     diametro: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120), unique=False, nullable=False)
     gravedad: Mapped[str] = mapped_column(nullable=False)
     clima: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120), unique=False, nullable=False)
     name: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120), unique=False, nullable=False)
     favorit_planet: Mapped[List["FavoritPlaneta"]] = relationship()
 
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
+            "diametro": self.diametro,
+            "name":self.name,
+            "clima":self.clima,
+            "gravedad": self.gravedad
             # do not serialize the password, its a security breach
         }
 
