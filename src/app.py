@@ -59,8 +59,23 @@ def traer_planeta():
     planetas = Planeta.query.all()
     return jsonify([planeta.serialize() for planeta in planetas]), 200
 
+@app.route('/usuario/<int:user_id>/people/<int:people_id>', methods=['GET'])
+def personas_favoritos(user_id,people_id):
+    user= User.query.get(user_id)
+    if user is None: 
+        return jsonify ({"error":"usuario no encontrado"})
+    
+    people= People.query.get(people_id)
+    
+    favoritos_existentes= FavoritPeople.query.filter_by(user_id=user_id,people_id=people_id).first()
+
+    favoritos=FavoritPeople(user_id=user_id, people_id=people_id)
+    db.session.add(favoritos)
+    db.session.commit()
+    return jsonify(favoritos.serialize()), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+
