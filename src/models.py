@@ -11,14 +11,15 @@ class User(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-    favorit_people: Mapped[List["FavoritPeople"]] = relationship()
-    favorit_planet: Mapped[List["FavoritPlaneta"]] = relationship()
+    favorit_people: Mapped[List["FavoritPeople"]
+                           ] = relationship(back_populates="user")
+    favorit_planeta: Mapped[List["FavoritPlaneta"]
+                           ] = relationship(back_populates="user")
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
         }
 
 
@@ -28,7 +29,8 @@ class People(db.Model):
         String(120), unique=False, nullable=False)
     height: Mapped[str] = mapped_column(nullable=False)
     weight: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-    favorit_people: Mapped[List["FavoritPeople"]] = relationship()
+    favorit_people: Mapped[List["FavoritPeople"]
+                           ] = relationship(back_populates="persona")
     name: Mapped[str] = mapped_column(nullable=False)
 
     def serialize(self):
@@ -36,8 +38,7 @@ class People(db.Model):
             "id": self.id,
             "age": self.age,
             "height": self.height,
-            "name": self.name
-            # do not serialize the password, its a security breach
+            "name": self.name,
         }
 
 
@@ -47,6 +48,16 @@ class FavoritPeople(db.Model):
         db.ForeignKey("user.id"), primary_key=True)
     id_people: Mapped[int] = mapped_column(
         db.ForeignKey("people.id"), primary_key=True)
+    user: Mapped["User"] = relationship(back_populates="favorit_people")
+    persona: Mapped[List["People"]] = relationship(
+        back_populates="favorit_people")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_user": self.user,
+            "id_people": self.people,
+        }
 
 
 class Planeta(db.Model):
@@ -58,16 +69,15 @@ class Planeta(db.Model):
         String(120), unique=False, nullable=False)
     name: Mapped[str] = mapped_column(
         String(120), unique=False, nullable=False)
-    favorit_planet: Mapped[List["FavoritPlaneta"]] = relationship()
+    favorit_planeta: Mapped[List["FavoritPlaneta"]] = relationship(back_populates="planeta")
 
     def serialize(self):
         return {
             "id": self.id,
             "diametro": self.diametro,
-            "name":self.name,
-            "clima":self.clima,
-            "gravedad": self.gravedad
-            # do not serialize the password, its a security breach
+            "name": self.name,
+            "clima": self.clima,
+            "gravedad": self.gravedad,
         }
 
 
@@ -77,3 +87,12 @@ class FavoritPlaneta(db.Model):
         db.ForeignKey("user.id"), primary_key=True)
     id_planeta: Mapped[int] = mapped_column(
         db.ForeignKey("planeta.id"), primary_key=True)
+    user: Mapped["User"] = relationship(back_populates="favorit_planeta")
+    planeta: Mapped["Planeta"] = relationship(back_populates="favorit_planeta")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "id_user": self.user,
+            "id_planeta": self.planeta,
+        }

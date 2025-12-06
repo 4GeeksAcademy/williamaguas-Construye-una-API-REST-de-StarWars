@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People, Planeta
+from models import db, User, People, Planeta, FavoritPeople, FavoritPlaneta
 # from models import Person
 
 app = Flask(__name__)
@@ -58,7 +58,6 @@ def traer_people():
 def traer_planeta():
     planetas = Planeta.query.all()
     return jsonify([planeta.serialize() for planeta in planetas]), 200
-
 
 
 # this only runs if `$ python src/app.py` is executed
